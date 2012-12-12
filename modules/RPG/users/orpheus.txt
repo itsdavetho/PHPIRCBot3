@@ -1,0 +1,10 @@
+username = ""
+current_hitpoints = "10"
+[stats]
+hitpoints = 10
+strength = 3
+attack = 3
+defense = 3
+
+[enemy]
+

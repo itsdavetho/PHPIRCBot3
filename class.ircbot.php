@@ -53,8 +53,11 @@
 					$this->handleModule(substr($this->CURRENT_COMMAND, 1));
 					$data = ob_get_clean();
 					if(!empty($data)) {
-						$data = explode(PHP_EOL, $data);
+						$data = explode("\n", $data);
 						foreach($data as $line) {
+							if(strlen(trim($line)) == 0)
+								continue;
+							$line = str_replace("	", '  ', $line);
 							$this->sendMessage($line);
 						}
 					}
@@ -138,7 +141,7 @@
 		public function handleModule($mod) {
 			if(isset($this->IRCBOT_MODULES[$mod])) {
 				$mod = $this->IRCBOT_MODULES[$mod];
-				$methods = array('pre_execute', 'execute', 'post_execute');
+				$methods = array('pre_execute', 'execute', 'post_execute'); // the order of this array is very important!
 				foreach($methods as $method)
 					if(method_exists($mod, $method))
 						$mod->$method($this);
