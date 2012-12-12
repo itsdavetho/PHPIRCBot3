@@ -61,12 +61,12 @@ It is possible to make it search for your class within the file found, but I jus
 
 How to use handle an event within a module
 ==========================================
-Simply create a method named after the event you're handling!
+Simply create a method named after the event you're handling, prefixed with "EVENT_"!
 Like this:
 ```php
 <?php
 	class wut {
-		public function PRIVMSG(IRCBot $irc_bot, array $ds = null) {
+		public function EVENT_PRIVMSG(IRCBot $irc_bot, array $ds = null) {
 			if($ds === null)
 				$ds = $irc_bot->getResultSet();
 			$irc_bot->sendMessage($ds['trail']);
