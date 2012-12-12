@@ -3,7 +3,7 @@
 	 * @name		IRCBot
 	 * @description	A PHP class that can connect to IRC.
 	 * @author		xxOrpheus
-	 * @version		3.0
+	 * @version		3.1
 	 * RELEASE NOTES:
 	 *	This is currently in beta testing. Don't be alarmed if you encounter a bug, just report it!
 	 */
@@ -22,6 +22,9 @@
 		protected $IRCBOT_MODULES = array();
 
 		protected $EVENT_HANDLERS;
+
+		protected $LOGGING_ENABLED = false;
+		protected $LOG = '';
 
 		/* 
 		 * @desc The destructor. Can be sent an array, which will fill the IRC arguments.
@@ -46,12 +49,20 @@
 			while($this->IRC_SOCKET) {
 				$this->IRC_DATA = fgets($this->IRC_SOCKET, 1024);
 				$this->IRC_DATA_ARGS = $this->parse_message($this->IRC_DATA);
+				if($this->LOGGING_ENABLED) ob_start();
 				$this->handleCommand($this->IRC_DATA_ARGS['command']);
+				if($this->LOGGING_ENABLED) {
+					$data = ob_get_clean();
+					$this->LOG .= $data;
+					echo $data;
+				}
 				if(substr($this->IRC_DATA_ARGS['trail'], 0, 1) == '!') {
 					ob_start();
 					$this->CURRENT_COMMAND = preg_replace('/(\s*)([^\s]*)(.*)/', '$2', $this->IRC_DATA_ARGS['trail']);
 					$this->handleModule(substr($this->CURRENT_COMMAND, 1));
 					$data = ob_get_clean();
+					if($this->LOGGING_ENABLED)
+						$this->LOG .= $data;
 					if(!empty($data)) {
 						$data = explode("\n", $data);
 						foreach($data as $line) {
@@ -62,6 +73,8 @@
 						}
 					}
 				}
+				if($this->LOGGING_ENABLED)
+					$this->pushLog();
 			}
 		}
 
@@ -103,7 +116,7 @@
 				else
 					echo 'Module "'.$module_name.'"" already loaded!'.PHP_EOL;
 				if(class_exists($module_name)) {
-					$this->IRCBOT_MODULES[$module_name] = new $module_name;
+					$this->IRCBOT_MODULES[$module_name] = new $module_name($this);
 				} else
 					echo 'Module "'.$dir.'\\'.$module_name.'.php" could not be loaded! Class name must match that of the filename!' . PHP_EOL;
 			}
@@ -175,6 +188,19 @@
 			if(isset($this->IRC_ARGS[$arg]))
 				return $this->IRC_ARGS[$arg];
 			return null;
+		}
+
+		public function toggleLogging() {
+			$this->LOGGING_ENABLED = !$this->LOGGING_ENABLED;
+		}
+
+		public function pushLog() {
+			$current_log = 'logs/'.date('d-M-Y').'--log.txt';
+			if(!is_file($current_log))
+				file_put_contents($current_log, '');
+			$log = file_get_contents($current_log);
+			file_put_contents($current_log, $log . $this->LOG);
+			$this->LOG = '';
 		}
 	}
 ?>
