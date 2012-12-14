@@ -74,8 +74,3 @@ Like this:
 	}
 ?>
 ```
-
-There is a few small issues with this (events such as 001 cannot be handled), which I'll figure out in a bit.
-
-I'm thinking I'll just prefix all handles it looks for with EVENT_
-	}
