@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Phpircbot3 by xxOrpheus</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Phpircbot3</h1>
+        <p class="header">An IRC bot made in PHP.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/xxOrpheus/PHPIRCBot3/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/xxOrpheus/PHPIRCBot3/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/xxOrpheus/PHPIRCBot3">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/xxOrpheus">xxOrpheus</a></p>
+
+
+      </header>
+      <section>
+        <h1>PHPIRCBot</h1>
+
+<p>PHPIRCBot version 3 features proper event handlers, modules (previously: commands), and it's all made by you! I am including absolutely no content in this release, so it's up to you to make it work.
+The class simply connects to a server -&gt; channel and nothing more.</p>
+
+<p>PHPIRCBot v3 is currently in beta testing, so if you encounter an error, don't be afraid! Just report it!.</p>
+
+<p>Example usage of class:</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+    <span class="k">require_once</span><span class="p">(</span><span class="s1">'class.ircbot.php'</span><span class="p">);</span>
+
+    <span class="nv">$irc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">IRCBot</span><span class="p">();</span>
+    <span class="nv">$irc</span><span class="o">-&gt;</span><span class="na">setArg</span><span class="p">(</span><span class="s1">'IRC_SERVER'</span><span class="p">,</span> <span class="s1">'irc.gyrat.in'</span><span class="p">);</span>
+    <span class="nv">$irc</span><span class="o">-&gt;</span><span class="na">setArg</span><span class="p">(</span><span class="s1">'IRC_PORT'</span><span class="p">,</span> <span class="mi">6667</span><span class="p">);</span>
+    <span class="nv">$irc</span><span class="o">-&gt;</span><span class="na">setArg</span><span class="p">(</span><span class="s1">'IRC_CHANNEL'</span><span class="p">,</span> <span class="s1">'#balls'</span><span class="p">);</span>
+    <span class="nv">$irc</span><span class="o">-&gt;</span><span class="na">setArg</span><span class="p">(</span><span class="s1">'IRC_NICK'</span><span class="p">,</span> <span class="s1">'phpircbot3'</span><span class="p">);</span>
+    <span class="nv">$irc</span><span class="o">-&gt;</span><span class="na">setArg</span><span class="p">(</span><span class="s1">'IRC_USER'</span><span class="p">,</span> <span class="s1">'phpircbot3'</span><span class="p">);</span>
+    <span class="nv">$irc</span><span class="o">-&gt;</span><span class="na">setArg</span><span class="p">(</span><span class="s1">'IRC_OWNER'</span><span class="p">,</span> <span class="s1">'you'</span><span class="p">);</span>
+
+    <span class="nv">$irc</span><span class="o">-&gt;</span><span class="na">addHandler</span><span class="p">(</span><span class="s1">'PRIVMSG'</span><span class="p">,</span>
+        <span class="k">function</span><span class="p">(</span><span class="nx">IRCBot</span> <span class="nv">$irc_bot</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$ds</span> <span class="o">=</span> <span class="nv">$irc_bot</span><span class="o">-&gt;</span><span class="na">getResultSet</span><span class="p">();</span>
+            <span class="k">echo</span> <span class="s1">'['</span><span class="o">.</span><span class="nb">date</span><span class="p">(</span><span class="s1">'h:i'</span><span class="p">)</span><span class="o">.</span><span class="s1">'] &lt;'</span><span class="o">.</span><span class="nx">trim</span><span class="p">(</span><span class="nv">$ds</span><span class="p">[</span><span class="s1">'args'</span><span class="p">])</span><span class="o">.</span><span class="s1">' '</span><span class="o">.</span><span class="nx">trim</span><span class="p">(</span><span class="nv">$ds</span><span class="p">[</span><span class="s1">'username'</span><span class="p">])</span><span class="o">.</span><span class="s1">'&gt; '</span> <span class="o">.</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$ds</span><span class="p">[</span><span class="s1">'trail'</span><span class="p">])</span> <span class="o">.</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">);</span>
+    <span class="nv">$irc</span><span class="o">-&gt;</span><span class="na">addHandler</span><span class="p">(</span><span class="s1">'001'</span><span class="p">,</span>
+        <span class="k">function</span><span class="p">(</span><span class="nx">IRCBot</span> <span class="nv">$irc_bot</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$ds</span> <span class="o">=</span> <span class="nv">$irc_bot</span><span class="o">-&gt;</span><span class="na">send_cmd</span><span class="p">(</span><span class="s1">'JOIN :'</span> <span class="o">.</span> <span class="nv">$irc_bot</span><span class="o">-&gt;</span><span class="na">getArg</span><span class="p">(</span><span class="s1">'IRC_CHANNEL'</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">);</span>
+    <span class="nv">$irc</span><span class="o">-&gt;</span><span class="na">loadModules</span><span class="p">();</span>
+
+
+    <span class="nv">$irc</span><span class="o">-&gt;</span><span class="na">start</span><span class="p">();</span>
+<span class="cp">?&gt;</span><span class="x"></span>
+</pre></div>
+
+<p>Example module (listModules.php):</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+    <span class="k">class</span> <span class="nc">listModules</span> <span class="p">{</span>
+        <span class="k">public</span> <span class="k">function</span> <span class="nf">execute</span><span class="p">(</span><span class="nx">IRCBot</span> <span class="nv">$irc_bot</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$module_list</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+            <span class="nv">$modules</span> <span class="o">=</span> <span class="nv">$irc_bot</span><span class="o">-&gt;</span><span class="na">getModules</span><span class="p">();</span>
+            <span class="nb">asort</span><span class="p">(</span><span class="nv">$modules</span><span class="p">);</span>
+            <span class="k">foreach</span><span class="p">(</span><span class="nv">$modules</span> <span class="k">as</span> <span class="nv">$module</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nv">$module_list</span> <span class="o">.=</span> <span class="nb">get_class</span><span class="p">(</span><span class="nv">$module</span><span class="p">)</span> <span class="o">.</span> <span class="s1">', '</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">echo</span> <span class="s1">'Modules: '</span> <span class="o">.</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$module_list</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="cp">?&gt;</span><span class="x"></span>
+</pre></div>
+
+<p>All modules must be named after their filename. So if your module is to be called "MyVeryFirstSuperDuperCoolUltraAwesomeModule", then your file must be named after it respectively:
+MyVeryFirstSuperDuperCoolUltraAwesomeModule.php</p>
+
+<p>It is possible to make it search for your class within the file found, but I just don't really think it's worth it :p</p>
+
+<h1>How to use handle an event within a module</h1>
+
+<p>Simply create a method named after the event you're handling, prefixed with "EVENT_"!
+Like this:</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+    <span class="k">class</span> <span class="nc">wut</span> <span class="p">{</span>
+        <span class="k">public</span> <span class="k">function</span> <span class="nf">EVENT_PRIVMSG</span><span class="p">(</span><span class="nx">IRCBot</span> <span class="nv">$irc_bot</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$ds</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="nv">$ds</span> <span class="o">===</span> <span class="k">null</span><span class="p">)</span>
+                <span class="nv">$ds</span> <span class="o">=</span> <span class="nv">$irc_bot</span><span class="o">-&gt;</span><span class="na">getResultSet</span><span class="p">();</span>
+            <span class="nv">$irc_bot</span><span class="o">-&gt;</span><span class="na">sendMessage</span><span class="p">(</span><span class="nv">$ds</span><span class="p">[</span><span class="s1">'trail'</span><span class="p">]);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="cp">?&gt;</span><span class="x"></span>
+</pre></div>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
