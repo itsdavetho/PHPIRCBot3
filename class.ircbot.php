@@ -37,7 +37,7 @@ class IRCBot {
 	/** 
 	 * The contructor. Can be sent an array, which will fill the IRC arguments.
 	 * 
-	 * @param       array $args IRC arguments. Channel, server, port etc all can be set here..
+	 * @param array $args IRC arguments. Channel, server, port etc all can be set here..
 	 *
 	 */
 	public function IRCBot(array $args = array()) {
@@ -97,7 +97,7 @@ class IRCBot {
 	/** 
 	 * Returns the result set. Mainly used by modules.
 	 * 
-	 * @return      array
+	 * @return array
 	 *
 	 */
 
@@ -108,7 +108,7 @@ class IRCBot {
 	/**
 	 * Sends a command to the active server.
 	 * 
-	 * @param       string $cmd The command to be sent.
+	 * @param string $cmd The command to be sent.
 	 *
 	 */
 	public function sendCommand($cmd) {
@@ -122,9 +122,9 @@ class IRCBot {
 	/**
 	 * Alias for sendCommand(.....), sends a message to a user or channel.
 	 * 
-	 * @param       string $msg The message being sent.
-	 * @param       string $chanuser User or channel. If set to false, will default to channel origin.
-	 * @return      null
+	 * @param  string $msg The message being sent.
+	 * @param  string $chanuser User or channel. If set to false, will default to channel origin.
+	 * @return null
 	 * 
 	 */
 	public function sendMessage($msg, $chanuser = false) {
@@ -136,8 +136,8 @@ class IRCBot {
 	/**
 	 * Parse data sent by server.
 	 * 
-	 * @param       string $str The data received by server.
-	 * @return      array
+	 * @param  string $str The data received by server.
+	 * @return array
 	 *
 	 */
 	public function parseMessage($str) {
@@ -159,7 +159,7 @@ class IRCBot {
 	/**
 	 * Load modules in specified directory.
 	 * 
-	 * @param       string $dir The directory to be searched for modules.
+	 * @param string $dir The directory to be searched for modules.
 	 *
 	 */
 	public function loadModules($dir = null) {
@@ -185,7 +185,7 @@ class IRCBot {
 	/**
 	 * Get active modules.
 	 * 
-	 * @return      Array of objects.
+	 * @return Array of objects.
 	 *
 	 */
 	public function getModules() {
@@ -195,7 +195,7 @@ class IRCBot {
 	/**
 	 * Handle command sent by server.
 	 * 
-	 * @param       string $command The command
+	 * @param string $command The command
 	 *
 	 */
 	public function handleCommand($command) {
@@ -229,7 +229,7 @@ class IRCBot {
 	/**
 	 * Get the current command. (!thesethings)
 	 * 
-	 * @return      string Current command
+	 * @return string Current command
 	 *
 	 */
 	public function getCurrentCommand() {
@@ -239,7 +239,7 @@ class IRCBot {
 	/**
 	 * Handle a module.
 	 * 
-	 * @param       string $mod The module.
+	 * @param string $mod The module.
 	 *
 	 */
 	public function handleModule($mod) {
@@ -259,9 +259,9 @@ class IRCBot {
 	/**
 	 * Add a handler for a command.
 	 * 
-	 * @param       string $command The command to handle.
-	 * @param       closure $func The callback for the command.
-	 * @return      int The ID of the handle.
+	 * @param  string $command The command to handle.
+	 * @param  closure $func The callback for the command.
+	 * @return int The ID of the handle.
 	 *
 	 */
 	public function addHandler($command, closure $func) {
@@ -275,8 +275,8 @@ class IRCBot {
 	/**
 	 * Remove a handler.
 	 * 
-	 * @param       string $command The command
-	 * @param       int $id The index of the handle. It is returned when you add a new handler.
+	 * @param string $command The command
+	 * @param int $id The index of the handle. It is returned when you add a new handler.
 	 *
 	 */
 	public function removeHandler($command, $id) {
@@ -290,8 +290,8 @@ class IRCBot {
 	/**
 	 * Set an argument for the IRC Bot.
 	 * 
-	 * @param       string $arg The argument we're setting
-	 * @param       string $value and the value it's set to.
+	 * @param string $arg The argument we're setting
+	 * @param string $value and the value it's set to.
 	 *
 	 */
 	public function setArg($arg, $value) {
@@ -302,7 +302,7 @@ class IRCBot {
 	/**
 	 * Get an argument value.
 	 * 
-	 * @return      mixed
+	 * @return mixed
 	 *
 	 */
 	public function getArg($arg) {
@@ -336,8 +336,8 @@ class IRCBot {
 	/**
 	 * Behaves like file_get_contents(...)
 	 * 
-	 * @return      string The contents it retrieves.
-	 * @param       string $url The URL to retrieve
+	 * @return string The contents it retrieves.
+	 * @param  string $url The URL to retrieve
 	 * 
 	 */
 	public function file_get_contents_2($url) {
