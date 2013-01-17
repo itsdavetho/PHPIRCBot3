@@ -35,7 +35,8 @@ class IRCBot {
 	protected $LOG = '';
 
 	/** 
-	 * @description The contructor. Can be sent an array, which will fill the IRC arguments.
+	 * The contructor. Can be sent an array, which will fill the IRC arguments.
+	 * 
 	 * @param       array $args IRC arguments. Channel, server, port etc all can be set here..
 	 *
 	 */
@@ -49,7 +50,7 @@ class IRCBot {
 	}
 
 	/**
-	 * @description All work is done here. All handlers, modules etc will be executed here.
+	 * All work is done here. All handlers, modules etc will be executed here.
 	 *
 	 */
 	public function start() {
@@ -94,7 +95,8 @@ class IRCBot {
 	}
 
 	/** 
-	 * @description Returns the result set. Mainly used by modules.
+	 * Returns the result set. Mainly used by modules.
+	 * 
 	 * @return      array
 	 *
 	 */
@@ -104,7 +106,8 @@ class IRCBot {
 	}
 
 	/**
-	 * @description Sends a command to the active server.
+	 * Sends a command to the active server.
+	 * 
 	 * @param       string $cmd The command to be sent.
 	 *
 	 */
@@ -117,7 +120,8 @@ class IRCBot {
 		return true;
 	}
 	/**
-	 * @description Alias for sendCommand(.....), sends a message to a user or channel.
+	 * Alias for sendCommand(.....), sends a message to a user or channel.
+	 * 
 	 * @param       string $msg The message being sent.
 	 * @param       string $chanuser User or channel. If set to false, will default to channel origin.
 	 * @return      null
@@ -130,7 +134,8 @@ class IRCBot {
 	}
 
 	/**
-	 * @description Parse data sent by server.
+	 * Parse data sent by server.
+	 * 
 	 * @param       string $str The data received by server.
 	 * @return      array
 	 *
@@ -152,7 +157,8 @@ class IRCBot {
 		}
 
 	/**
-	 * @description Load modules in specified directory.
+	 * Load modules in specified directory.
+	 * 
 	 * @param       string $dir The directory to be searched for modules.
 	 *
 	 */
@@ -177,7 +183,8 @@ class IRCBot {
 		}
 
 	/**
-	 * @description Get active modules.
+	 * Get active modules.
+	 * 
 	 * @return      Array of objects.
 	 *
 	 */
@@ -186,7 +193,8 @@ class IRCBot {
 	}
 
 	/**
-	 * @description Handle command sent by server.
+	 * Handle command sent by server.
+	 * 
 	 * @param       string $command The command
 	 *
 	 */
@@ -219,7 +227,8 @@ class IRCBot {
 	}
 
 	/**
-	 * @description Get the current command. (!thesethings)
+	 * Get the current command. (!thesethings)
+	 * 
 	 * @return      string Current command
 	 *
 	 */
@@ -228,7 +237,8 @@ class IRCBot {
 	}
 
 	/**
-	 * @description Handle a module.
+	 * Handle a module.
+	 * 
 	 * @param       string $mod The module.
 	 *
 	 */
@@ -247,7 +257,8 @@ class IRCBot {
 		}
 
 	/**
-	 * @description Add a handler for a command.
+	 * Add a handler for a command.
+	 * 
 	 * @param       string $command The command to handle.
 	 * @param       closure $func The callback for the command.
 	 * @return      int The ID of the handle.
@@ -262,7 +273,8 @@ class IRCBot {
 	}
 
 	/**
-	 * @description Remove a handler.
+	 * Remove a handler.
+	 * 
 	 * @param       string $command The command
 	 * @param       int $id The index of the handle. It is returned when you add a new handler.
 	 *
@@ -276,7 +288,8 @@ class IRCBot {
 	}
 
 	/**
-	 * @description Set an argument for the IRC Bot.
+	 * Set an argument for the IRC Bot.
+	 * 
 	 * @param       string $arg The argument we're setting
 	 * @param       string $value and the value it's set to.
 	 *
@@ -287,7 +300,8 @@ class IRCBot {
 	}
 
 	/**
-	 * @description Get an argument value.
+	 * Get an argument value.
+	 * 
 	 * @return      mixed
 	 *
 	 */
@@ -298,7 +312,7 @@ class IRCBot {
 	}
 
 	/**
-	 * @description Toggle logging. I recommend leaving it off.
+	 * Toggle logging. I recommend leaving it off.
 	 *
 	 */
 	public function toggleLogging() {
@@ -306,20 +320,22 @@ class IRCBot {
 	}
 
 	/**
-	 * @description Push current log data to log.
-	 *
+	 * Push current log data to log.
+	 * 
+	 * @version 1.10
+	 * 
 	 */
 	public function pushLog() {
 		$current_log = 'logs/'.date('d-M-Y').'--log.txt';
 		if(!is_file($current_log))
 			file_put_contents($current_log, '');
-		$log = file_get_contents($current_log);
-		file_put_contents($current_log, $log . $this->LOG);
+		file_put_contents($current_log, $this->LOG, FILE_APPEND);
 		$this->LOG = '';
 	}
 
 	/**
-	 * @description Behaves like file_get_contents(...)
+	 * Behaves like file_get_contents(...)
+	 * 
 	 * @return      string The contents it retrieves.
 	 * @param       string $url The URL to retrieve
 	 * 
