@@ -30,8 +30,6 @@ Example usage of class:
 			$ds = $irc_bot->send_cmd('JOIN :' . $irc_bot->getArg('IRC_CHANNEL'));
 		}
 	);
-	$irc->loadModules();
-
 
 	$irc->start();
 ?>
