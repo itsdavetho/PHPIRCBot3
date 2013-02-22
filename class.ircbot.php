@@ -40,13 +40,14 @@ class IRCBot {
 	 * @param array $args IRC arguments. Channel, server, port etc all can be set here..
 	 *
 	 */
-	public function IRCBot(array $args = array()) {
+	public function __construct(array $args = array(), $dir = null) {
 		if(count($args) > 0)
 			$this->IRC_ARGS = array_merge($args, $this->IRC_ARGS);
 		else {
 			$default = array('IRC_PORT' => 6667, 'IRC_NICK' => 'PHPIRCBot', 'IRC_USER' => 'PHPIRCBot', 'OWNER' => 'PHPIRCBot');
 			$this->IRC_ARGS = array_merge($default, $this->IRC_ARGS);
 		}
+		$this->loadModules($dir);
 	}
 
 	/**
