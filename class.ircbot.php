@@ -8,10 +8,10 @@
  * LICENSE: PEAR gave me aids.
  * 
  * @category  Sockets
- * @package   NoneFuckOff
+ * @package   na
  * @author    xxOrpheus <lolidunno@live.co.uk>
  * @copyright 2012 xxOrpheus
- * @license   http://fuckoffpear.com/ PEAR is gay 2012
+ * @license   http://nopear.com/ PEAR is gay 2013
  * @version   GIT: $Id:$
  * @link      https://github.com/xxOrpheus/PHPIRCBot3
  */
@@ -25,7 +25,12 @@ class IRCBot {
 	protected $IRC_DATA;
 	protected $IRC_DATA_ARGS;
 
-	protected $IRC_ARGS = array();
+	protected $IRC_ARGS = array(
+		'IRC_PORT' => 6667,
+		'IRC_NICK' => 'PHPIRCBot',
+		'IRC_USER' => 'PHPIRCBot',
+		'OWNER'    => 'PHPIRCBot'
+	);
 
 	protected $IRCBOT_MODULES = array();
 
@@ -43,12 +48,6 @@ class IRCBot {
 	public function __construct(array $args = array(), $dir = null) {
 		if(count($args) > 0) {
 			$this->IRC_ARGS = array_merge($args, $this->IRC_ARGS);
-		} else {
-			$default = array('IRC_PORT' => 6667, 
-					 'IRC_NICK' => 'PHPIRCBot', 
-					 'IRC_USER' => 'PHPIRCBot', 
-					 'OWNER' => 'PHPIRCBot');
-			$this->IRC_ARGS = array_merge($default, $this->IRC_ARGS);
 		}
 		$this->loadModules($dir);
 	}
@@ -88,7 +87,7 @@ class IRCBot {
 				$this->CURRENT_COMMAND = preg_replace('/(\s*)' .
 				'([^\s]*)(.*)/',
 					   '$2',
-		  $this->IRC_DATA_ARGS['trail']);
+		        $this->IRC_DATA_ARGS['trail']);
 		  
 				$this->handleModule(substr($this->CURRENT_COMMAND, 1));
 				$data = ob_get_clean();
@@ -96,7 +95,7 @@ class IRCBot {
 					$this->LOG .= $data;
 				}
 				if(!empty($data)) {
-					$data = explode("\n", $data);
+					$data = explode(PHP_EOL, $data);
 					foreach($data as $line) {
 						if(strlen(trim($line)) == 0) {
 							continue;
@@ -111,7 +110,7 @@ class IRCBot {
 					}
 				}
 			}
-			if($this->LOGGING_ENABLED) {
+			if($this->LOGGING_ENABLED && strlen($this->LOG) > 512) {
 				$this->pushLog();
 			}
 		}
@@ -202,12 +201,12 @@ class IRCBot {
 	 */
 	public function loadModules($dir = null) {
 		if(is_null($dir)) {
-			$dir = dirname(__FILE__) . '\\modules';
+			$dir = dirname(__FILE__) . '/modules';
 		} else if(!is_dir($dir)) {
 	        Throw new Exception($dir . ' is not a valid directory');
 		}
         
-		$modules = glob($dir . '\\*.php');
+		$modules = glob($dir . '/*.php');
 		foreach($modules as $module) {
 			$module_name = basename($module, '.php');
 			if(!class_exists($module_name)) {
@@ -219,7 +218,7 @@ class IRCBot {
 			if(class_exists($module_name)) {
 				$this->IRCBOT_MODULES[$module_name] = new $module_name($this);
 			} else {
-				echo 'Module "' . $dir.'\\'.$module_name
+				echo 'Module "' . $dir.'/'.$module_name
 				     . '.php" could not be loaded!'
 				     . 'Class name must match that of the filename!' . PHP_EOL;
 			}
