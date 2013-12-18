@@ -1,10 +1,9 @@
 PHPIRCBot
 =========
 
-PHPIRCBot version 3 features proper event handlers, modules (previously: commands), and it's all made by you! I am including absolutely no content in this release, so it's up to you to make it work.
-The class simply connects to a server -> channel and nothing more.
+PHPIRCBot is now better than ever. It features an easy to use module system, allowing you to create event handlers (for messages from the server) on the fly. PHPIRCBot allows you to make very intricate IRC bots with ease. 
 
-PHPIRCBot v3 is currently in beta testing, so if you encounter an error, don't be afraid! Just report it!.
+There are no included modules with PHPIRCBot, you must make your own. See the examples below. 
 
 Example usage of class:
 ```php
