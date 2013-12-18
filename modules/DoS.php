@@ -1,3 +1,0 @@
-<?php
-// eat shit
-?>
