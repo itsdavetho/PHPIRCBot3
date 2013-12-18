@@ -248,11 +248,7 @@ class IRCBot {
 		if(!isset($this->EVENT_HANDLERS[$command]) || $command == 'PING') {
 			$ds = $this->getResultSet();
 			foreach($ds as $s) {
-				if(empty($s)) {
-					$empty = true;
-				} else {
-					$empty = false;
-				}
+				$empty = empty($s);
 			}
 			if(isset($empty) && $empty === false) {
 				echo '['.date('h:i').'] <'
@@ -260,11 +256,11 @@ class IRCBot {
 				     . ':' . $ds['command'] . '> '
 				     . trim($ds['trail']) . PHP_EOL;
 			}
-			return false;
-		}
-        
-		foreach($this->EVENT_HANDLERS[$command] as $func) {
-			$func($this);
+			//return false;
+		} else if(isset($this->EVENT_HANDLERS[$command])) {
+			foreach($this->EVENT_HANDLERS[$command] as $func) {
+				$func($this);
+			}
 		}
         
 		foreach($this->IRCBOT_MODULES as $mod) {
