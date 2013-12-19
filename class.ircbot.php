@@ -8,10 +8,10 @@
  * LICENSE: PEAR gave me aids.
  * 
  * @category  Sockets
- * @package   na
+ * @package   NoneFuckOff
  * @author    xxOrpheus <lolidunno@live.co.uk>
  * @copyright 2012 xxOrpheus
- * @license   http://nopear.com/ PEAR is gay 2013
+ * @license   http://fuckoffpear.com/ PEAR is gay 2012
  * @version   GIT: $Id:$
  * @link      https://github.com/xxOrpheus/PHPIRCBot3
  */
@@ -25,12 +25,7 @@ class IRCBot {
 	protected $IRC_DATA;
 	protected $IRC_DATA_ARGS;
 
-	protected $IRC_ARGS = array(
-		'IRC_PORT' => 6667,
-		'IRC_NICK' => 'PHPIRCBot',
-		'IRC_USER' => 'PHPIRCBot',
-		'OWNER'    => 'PHPIRCBot'
-	);
+	protected $IRC_ARGS = array();
 
 	protected $IRCBOT_MODULES = array();
 
@@ -46,8 +41,11 @@ class IRCBot {
 	 *
 	 */
 	public function __construct(array $args = array(), $dir = null) {
-		if(count($args) > 0) {
+		if(count($args) > 0)
 			$this->IRC_ARGS = array_merge($args, $this->IRC_ARGS);
+		else {
+			$default = array('IRC_PORT' => 6667, 'IRC_NICK' => 'PHPIRCBot', 'IRC_USER' => 'PHPIRCBot', 'OWNER' => 'PHPIRCBot');
+			$this->IRC_ARGS = array_merge($default, $this->IRC_ARGS);
 		}
 		$this->loadModules($dir);
 	}
@@ -57,25 +55,15 @@ class IRCBot {
 	 *
 	 */
 	public function start() {
-		$this->IRC_SOCKET = @fsockopen($this->getArg('IRC_SERVER'),
-				         intval($this->getArg('IRC_PORT')),
-				         		     $SOCK_ERR_NUM,
-				         		     $SOCK_ERR_STR);
-		if(!$this->IRC_SOCKET) {
+		$this->IRC_SOCKET = @fsockopen($this->getArg('IRC_SERVER'), intval($this->getArg('IRC_PORT')), $SOCK_ERR_NUM, $SOCK_ERR_STR);
+		if(!$this->IRC_SOCKET)
 			Throw new Exception($SOCK_ERR_STR);
-		}
-		$this->sendCommand('USER ' .
-				   $this->getArg('IRC_USER') .
-				   ' 0 * ' .
-				   $this->getArg('IRC_USER'));
-				   
+		$this->sendCommand('USER '.$this->getArg('IRC_USER').' 0 * ' . $this->getArg('IRC_USER'));
 		$this->sendCommand('NICK '.$this->getArg('IRC_NICK'));
 		while($this->IRC_SOCKET) {
 			$this->IRC_DATA = fgets($this->IRC_SOCKET, 1024);
 			$this->IRC_DATA_ARGS = $this->parseMessage($this->IRC_DATA);
-			if($this->LOGGING_ENABLED) {
-                ob_start();
-			}
+			if($this->LOGGING_ENABLED) ob_start();
 			$this->handleCommand($this->IRC_DATA_ARGS['command']);
 			if($this->LOGGING_ENABLED) {
 				$data = ob_get_clean();
@@ -84,35 +72,26 @@ class IRCBot {
 			}
 			if(substr($this->IRC_DATA_ARGS['trail'], 0, 1) == '!') {
 				ob_start();
-				$this->CURRENT_COMMAND = preg_replace('/(\s*)' .
-				'([^\s]*)(.*)/',
-					   '$2',
-		        $this->IRC_DATA_ARGS['trail']);
-		  
+				$this->CURRENT_COMMAND = preg_replace('/(\s*)([^\s]*)(.*)/', '$2', $this->IRC_DATA_ARGS['trail']);
 				$this->handleModule(substr($this->CURRENT_COMMAND, 1));
 				$data = ob_get_clean();
-				if($this->LOGGING_ENABLED) {
+				if($this->LOGGING_ENABLED)
 					$this->LOG .= $data;
-				}
 				if(!empty($data)) {
-					$data = explode(PHP_EOL, $data);
+					$data = explode("\n", $data);
 					foreach($data as $line) {
-						if(strlen(trim($line)) == 0) {
+						if(strlen(trim($line)) == 0)
 							continue;
-						}
 						$line = str_replace("   ", '  ', $line);
-						if($this->IRC_DATA_ARGS['isPM'] == true) {
-							$this->sendCommand('PRIVMSG '
-							. $this->IRC_DATA_ARGS['username'] . ' :' . $line);
-						} else {
+						if($this->IRC_DATA_ARGS['isPM'] == true)
+							$this->sendCommand('PRIVMSG ' . $this->IRC_DATA_ARGS['username'] . ' :' . $line);
+						else
 							$this->sendMessage($line);
-						}
 					}
 				}
 			}
-			if($this->LOGGING_ENABLED && strlen($this->LOG) > 512) {
+			if($this->LOGGING_ENABLED)
 				$this->pushLog();
-			}
 		}
 	}
 
@@ -134,30 +113,27 @@ class IRCBot {
 	 *
 	 */
 	public function sendCommand($cmd) {
-		if(!$this->IRC_SOCKET) {
+		if(!$this->IRC_SOCKET)
 			Throw new Exception('No connection opened');
-		}
-        
 		fwrite($this->IRC_SOCKET, $cmd . "\r\n");
 		fflush($this->IRC_SOCKET);
-		echo $cmd . PHP_EOL;
+		//if(!preg_match('/pong/i', $cmd)) {
+		//	echo trim($cmd) . PHP_EOL;
+		//}
 		return true;
 	}
 	/**
 	 * Alias for sendCommand(.....), sends a message to a user or channel.
 	 * 
 	 * @param  string $msg The message being sent.
-	 * @param  string $chanuser User or channel.
-	 *                          If set to false, will default to channel origin.
+	 * @param  string $chanuser User or channel. If set to false, will default to channel origin.
 	 * @return null
 	 * 
 	 */
-	public function sendMessage($msg, $chanuser = false) {
-		if($chanuser == false) {
-			$chanuser = $this->IRC_DATA_ARGS['args'];
-		}
-        
-		$this->sendCommand('PRIVMSG ' . $chanuser . ' :' . $msg);
+	public function sendMessage($msg, $user = false) {
+		if($user == false)
+			$user = $this->IRC_DATA_ARGS['args'];
+		$this->sendCommand('PRIVMSG ' . $user . ' :' . $msg);
 	}
 
 	/**
@@ -168,29 +144,19 @@ class IRCBot {
 	 *
 	 */
 	public function parseMessage($str) {
-		preg_match('/^(?:[:@]([^\\s]+) )?([^\\s]+)'
-		         . '(?: ((?:[^:\\s][^\\s]* ?)*))'
-		         . '?(?: ?:(.*))?$/', $str, $args);
-		if(isset($args[1])) {
-			if(strrpos($args[1], '!')) {
+		preg_match('/^(?:[:@]([^\\s]+) )?([^\\s]+)(?: ((?:[^:\\s][^\\s]* ?)*))?(?: ?:(.*))?$/', $str, $args);
+		if(isset($args[1]))
+			if(strrpos($args[1], '!'))
 				$username = substr($args[1], 0, strrpos($args[1], '!'));
-			} else {
+			else
 				$username = $args[1];
-			}
-		} else {
-			$username = '';
-			if(isset($args[3])) {
-			    $isPM = trim(strtolower($args[3]))
-			            == strtolower($this->IRC_ARGS['IRC_NICK'])
-			            ? true : false;
-			} else {
-			    $isPM = false;
-			}
-			return array('username' => $username,
-			             'command' => isset($args[2]) ? $args[2] : '',
-			             'trail' => isset($args[4]) ? trim($args[4]) : '',
-			             'args' => isset($args[3]) ? $args[3] : '',
-			             'isPM' => $isPM);
+			else
+				$username = '';
+			if(isset($args[3]))
+				$isPM = trim(strtolower($args[3])) == strtolower($this->IRC_ARGS['IRC_NICK']) ? true : false;
+			else
+				$isPM = false;
+			return array('username' => $username, 'command' => isset($args[2]) ? $args[2] : '', 'trail' => isset($args[4]) ? trim($args[4]) : '', 'args' => isset($args[3]) ? $args[3] : '', 'isPM' => $isPM);
 		}
 
 	/**
@@ -200,30 +166,24 @@ class IRCBot {
 	 *
 	 */
 	public function loadModules($dir = null) {
-		if(is_null($dir)) {
-			$dir = dirname(__FILE__) . '/modules';
-		} else if(!is_dir($dir)) {
-	        Throw new Exception($dir . ' is not a valid directory');
-		}
-        
-		$modules = glob($dir . '/*.php');
-		foreach($modules as $module) {
-			$module_name = basename($module, '.php');
-			if(!class_exists($module_name)) {
-				require_once($module);
-			} else {
-				echo 'Module "'.$module_name.'"" already loaded!' . PHP_EOL;
-			}
-            
-			if(class_exists($module_name)) {
-				$this->IRCBOT_MODULES[$module_name] = new $module_name($this);
-			} else {
-				echo 'Module "' . $dir.'/'.$module_name
-				     . '.php" could not be loaded!'
-				     . 'Class name must match that of the filename!' . PHP_EOL;
+		if(is_null($dir))
+			$dir = dirname(__FILE__) . '\\modules';
+		else
+			if(!is_dir($dir))
+				Throw new Exception($dir . ' is not a valid directory');
+			$modules = glob($dir . '\\*.php');
+			foreach($modules as $module) {
+				$module_name = basename($module, '.php');
+				if(!class_exists($module_name))
+					require_once($module);
+				else
+					echo 'Module "'.$module_name.'"" already loaded!'.PHP_EOL;
+				if(class_exists($module_name)) {
+					$this->IRCBOT_MODULES[$module_name] = new $module_name($this);
+				} else
+				echo 'Module "'.$dir.'\\'.$module_name.'.php" could not be loaded! Class name must match that of the filename!' . PHP_EOL;
 			}
 		}
-	}
 
 	/**
 	 * Get active modules.
@@ -248,21 +208,18 @@ class IRCBot {
 		if(!isset($this->EVENT_HANDLERS[$command]) || $command == 'PING') {
 			$ds = $this->getResultSet();
 			foreach($ds as $s) {
-				$empty = empty($s);
+				if(empty($s)) {
+					$empty = true;
+				} else {
+					$empty = false;
+				}
 			}
-			if(isset($empty) && $empty === false) {
-				echo '['.date('h:i').'] <'
-				     . trim($ds['username'])
-				     . ':' . $ds['command'] . '> '
-				     . trim($ds['trail']) . PHP_EOL;
-			}
-			//return false;
-		} else if(isset($this->EVENT_HANDLERS[$command])) {
-			foreach($this->EVENT_HANDLERS[$command] as $func) {
-				$func($this);
-			}
+			if(isset($empty) && $empty === false)
+				echo '['.date('h:i').'] <'.trim($ds['username']).':'.$ds['command'].'> ' . trim($ds['trail']) . PHP_EOL;
+			return false;
 		}
-        
+		foreach($this->EVENT_HANDLERS[$command] as $func)
+			$func($this);
 		foreach($this->IRCBOT_MODULES as $mod) {
 			if(method_exists($mod, 'EVENT_' . $command)) {
 				$command = 'EVENT_'.$command;
@@ -292,21 +249,21 @@ class IRCBot {
 		if(isset($this->IRCBOT_MODULES[$mod])) {
 			$args = $this->IRC_DATA_ARGS['trail'];
 			$args = substr($args, strlen($this->CURRENT_COMMAND) + 1);
-			$mod = $this->IRCBOT_MODULES[$mod];
-			$methods = array('pre_execute',
-			                 'execute',
-			                 'post_execute'); // leave
-			foreach($methods as $method) {
-				if(method_exists($mod, $method)) {
-					$mod->$method($this, $args);
-				}
+			if($args != false) {
+				$args = explode(" ", $args);
+			} else {
+				$args = array();
 			}
-            
-			return true;
+			$mod = $this->IRCBOT_MODULES[$mod];
+			$methods = array('pre_execute', 'execute', 'post_execute'); // the order of this array is very important!
+			$ds = $this->getResultSet();
+			foreach($methods as $method)
+				if(method_exists($mod, $method))
+					$mod->$method($this, $args, $ds);
+				return true;
+			} else
+			return false;
 		}
-        
-		return false;
-	}
 
 	/**
 	 * Add a handler for a command.
@@ -317,9 +274,8 @@ class IRCBot {
 	 *
 	 */
 	public function addHandler($command, closure $func) {
-		if(!isset($this->EVENT_HANDLERS[$command])) {
+		if(!isset($this->EVENT_HANDLERS[$command]))
 			$this->EVENT_HANDLERS[$command] = array();
-		}
 		$this->EVENT_HANDLERS[$command][] = $func;
 
 		return key(end($this->EVENT_HANDLERS));
@@ -329,17 +285,26 @@ class IRCBot {
 	 * Remove a handler.
 	 * 
 	 * @param string $command The command
-	 * @param int $id The index of the handle.
-	 *                It is returned when you add a new handler.
+	 * @param int $id The index of the handle. It is returned when you add a new handler.
 	 *
 	 */
 	public function removeHandler($command, $id) {
-		if(!isset($this->EVENT_HANDLERS[$command][$id])) {
+		if(!isset($this->EVENT_HANDLERS[$command][$id]))
 			return false;
-		}
-        
 		unset($this->EVENT_HANDLERS[$command][$id]);
+
 		return true;
+	}
+
+	/**
+	 * Check if username is the owner of the bot
+	 *
+	 * @param string $user The username in question
+	 * @return boolean
+	 *
+	 */
+	public function isOwner($user) {
+		return $this->IRC_ARGS['OWNER'] == $user;
 	}
 
 	/**
@@ -351,7 +316,6 @@ class IRCBot {
 	 */
 	public function setArg($arg, $value) {
 		$this->IRC_ARGS[$arg] = $value;
-        
 		return $this->IRC_ARGS[$arg];
 	}
 
@@ -362,10 +326,8 @@ class IRCBot {
 	 *
 	 */
 	public function getArg($arg) {
-		if(isset($this->IRC_ARGS[$arg])) {
+		if(isset($this->IRC_ARGS[$arg]))
 			return $this->IRC_ARGS[$arg];
-		}
-        
 		return null;
 	}
 
@@ -385,9 +347,8 @@ class IRCBot {
 	 */
 	public function pushLog() {
 		$current_log = 'logs/'.date('d-M-Y').'--log.txt';
-		if(!is_file($current_log)) {
+		if(!is_file($current_log))
 			file_put_contents($current_log, '');
-		}
 		file_put_contents($current_log, $this->LOG, FILE_APPEND);
 		$this->LOG = '';
 	}
@@ -408,11 +369,10 @@ class IRCBot {
 				CURLOPT_TIMEOUT => 10,
 				CURLOPT_FOLLOWLOCATION => true,
 				CURLOPT_HEADER => true,
-				CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.1; rv:16.0)'
-				                   . 'Gecko/20100101 Firefox/16.0',
+				CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.1; rv:16.0) Gecko/20100101 Firefox/16.0',
 				CURLOPT_REFERER => $url
-			)
-		);
+				)
+			);
 		$res = curl_exec($ch);
 
 		return $res;
