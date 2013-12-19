@@ -19,9 +19,8 @@ The example script below "echos" every message sent.
 ```php
 <?php
 	class wut {
-		public function EVENT_PRIVMSG(IRCBot $irc_bot, array $ds = null) {
-			if($ds === null)
-				$ds = $irc_bot->getResultSet();
+		public function EVENT_PRIVMSG(IRCBot $irc_bot) {
+			$ds = $irc_bot->getResultSet();
 			$irc_bot->sendMessage($ds['trail']);
 		}
 	}
