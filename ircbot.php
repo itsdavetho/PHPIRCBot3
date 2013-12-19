@@ -3,12 +3,12 @@
 
     $irc = new IRCBot();
     $irc->toggleLogging();
-    $irc->setArg('IRC_SERVER', 'liptoirc.no-ip.info');
-    $irc->setArg('IRC_PORT', 4378);
-    $irc->setArg('IRC_CHANNEL', '#fuckass');
+    $irc->setArg('IRC_SERVER', 'irc.rizon.net');
+    $irc->setArg('IRC_PORT', 6667);
+    $irc->setArg('IRC_CHANNEL', '#testing');
     $irc->setArg('IRC_NICK', 'phpircbot');
     $irc->setArg('IRC_USER', 'phpircbot');
-    $irc->setArg('OWNER', 'orpheus');
+    $irc->setArg('OWNER', 'me');
     $irc->setArg('verbose', true); // all data echoed during module execution will be sent as a message
     $irc->setArg('auto-reconnect', true); // reconnects to server upon disconnection.
 
