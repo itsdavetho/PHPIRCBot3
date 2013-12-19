@@ -5,61 +5,17 @@ PHPIRCBot is now better than ever. It features an easy to use module system, all
 
 There are no included modules with PHPIRCBot, you must make your own. See the examples below. 
 
-Example usage of class:
-```php
-<?php
-	require_once('class.ircbot.php');
+Example usage may be found in ircbot.php
 
-	$irc = new IRCBot();
-	$irc->setArg('IRC_SERVER', 'irc.gyrat.in');
-	$irc->setArg('IRC_PORT', 6667);
-	$irc->setArg('IRC_CHANNEL', '#balls');
-	$irc->setArg('IRC_NICK', 'phpircbot3');
-	$irc->setArg('IRC_USER', 'phpircbot3');
-	$irc->setArg('IRC_OWNER', 'you');
+Example modules may be found in modules folder.
 
-	$irc->addHandler('PRIVMSG',
-		function(IRCBot $irc_bot) {
-			$ds = $irc_bot->getResultSet();
-			echo '['.date('h:i').'] <'.trim($ds['args']).' '.trim($ds['username']).'> ' . trim($ds['trail']) . PHP_EOL;
-		}
-	);
-	$irc->addHandler('001',
-		function(IRCBot $irc_bot) {
-			$ds = $irc_bot->send_cmd('JOIN :' . $irc_bot->getArg('IRC_CHANNEL'));
-		}
-	);
+Module names must correspond to the file name. That means if your class name is doSomething, then your filename should be doSomething.php
 
-	$irc->start();
-?>
-```
-
-Example module (listModules.php):
-```php
-<?php
-	class listModules {
-		public function execute(IRCBot $irc_bot) {
-			$module_list = '';
-			$modules = $irc_bot->getModules();
-			asort($modules);
-			foreach($modules as $module) {
-				$module_list .= get_class($module) . ', ';
-			}
-			echo 'Modules: ' . substr($module_list, 0, -2);
-		}
-	}
-?>
-```
-
-All modules must be named after their filename. So if your module is to be called "MyVeryFirstSuperDuperCoolUltraAwesomeModule", then your file must be named after it respectively:
-MyVeryFirstSuperDuperCoolUltraAwesomeModule.php
-
-It is possible to make it search for your class within the file found, but I just don't really think it's worth it :p
-
-How to use handle an event within a module
-==========================================
-Simply create a method named after the event you're handling, prefixed with "EVENT_"!
-Like this:
+Event handling in modules
+=========================
+To handle events within modules, all you need to do is create a new function named EVENT_COMMAND.
+For example, EVENT_PRIVMSG.
+The example script below "echos" every message sent. 
 ```php
 <?php
 	class wut {
