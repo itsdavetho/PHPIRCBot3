@@ -171,7 +171,7 @@ class IRCBot {
 		preg_match('/^(?:[:@]([^\\s]+) )?([^\\s]+)'
 		         . '(?: ((?:[^:\\s][^\\s]* ?)*))'
 		         . '?(?: ?:(.*))?$/', $str, $args);
-		if(isset($args[1]))
+		if(isset($args[1])) {
 			if(strrpos($args[1], '!')) {
 				$username = substr($args[1], 0, strrpos($args[1], '!'));
 			} else {
