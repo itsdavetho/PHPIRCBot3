@@ -5,13 +5,13 @@
  * 
  * PHP version 5
  * 
- * LICENSE: wat
+ * LICENSE: NOPE
  * 
  * @category  Sockets
- * @package   None
+ * @package   Nope
  * @author    xxOrpheus <lolidunno@live.co.uk>
  * @copyright 2012 xxOrpheus
- * @license   http://foffpear.com/
+ * @license   http://nope.com
  * @version   GIT: $Id:$
  * @link      https://github.com/xxOrpheus/PHPIRCBot3
  */
@@ -108,6 +108,7 @@ class IRCBot {
             if ($this->LOGGING_ENABLED && strlen($this->LOG) > 64) {
                 $this->pushLog();
             }
+            usleep(10000);
         }
         if($this->getArg('auto-reconnect') == true) {
         	$this->start();
