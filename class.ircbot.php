@@ -1,18 +1,42 @@
 <?php
 
 /**
- * An IRC bot made in PHP!
- * 
+ * PHPSmallify -- Make your PHP code "small""
+ *
  * PHP version 5
+ *
+ * Copyright (c) 2013, David Harris
+ * All rights reserved.
+ * Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided
+ * that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * Neither the name of the <ORGANIZATION> nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  * 
- * LICENSE: NOPE
+ * @category  Utility
+ * @package   IRCBot
+ * @author    David Harris <lolidunno@live.co.uk>
+ * @copyright 2013-2013 David Harris
+ * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
+ * @version   GIT: $Id$
+ * @link      https://github.com/xxOrpheus/PHPIRCBot3
+ */
+
+/**
+ * PHPSmallify -- Make your PHP code "small""
  * 
- * @category  Sockets
- * @package   Nope
- * @author    xxOrpheus <lolidunno@live.co.uk>
- * @copyright 2012 xxOrpheus
- * @license   http://nope.com
- * @version   GIT: $Id:$
+ * @category  Utility
+ * @package   IRCBot
+ * @author    David Harris <lolidunno@live.co.uk>
+ * @copyright 2013-2013 David Harris
+ * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
+ * @version   Release: 2.0
  * @link      https://github.com/xxOrpheus/PHPIRCBot3
  */
 
@@ -24,15 +48,11 @@ class IRCBot {
     protected $IRC_SOCKET;
     protected $IRC_DATA;
     protected $IRC_DATA_ARGS;
-    
     protected $IRC_ARGS = array();
     
     protected $IRCBOT_MODULES = array();
-    
     protected $EVENT_HANDLERS;
-    
-    protected $LOGGING_ENABLED = false;
-    protected $LOG = '';
+
     
     /** 
      * The contructor. Can be sent an array, which will fill the IRC arguments.
@@ -55,8 +75,8 @@ class IRCBot {
             $this->IRC_ARGS = array_merge($default, $this->IRC_ARGS);
         }
 
-        if(!is_dir('logs')) {
-        	mkdir('logs');
+        if(!is_dir('modules')) {
+            mkdir('modules');
         }
         $this->loadModules($dir);
     }
@@ -66,47 +86,19 @@ class IRCBot {
      *
      */
     public function start() {
-        $this->IRC_SOCKET = @fsockopen($this->getArg('IRC_SERVER'), intval($this->getArg('IRC_PORT')), $SOCK_ERR_NUM, $SOCK_ERR_STR);
-        if (!$this->IRC_SOCKET)
+        $this->IRC_SOCKET = @fsockopen($this->getArg('IRC_SERVER'), intval($this->getArg('IRC_PORT')), $SOCK_ERR_NUM, $SOCK_ERR_STR, 5);
+        if (!$this->IRC_SOCKET) {
             Throw new Exception($SOCK_ERR_STR);
+        }
         $this->sendCommand('USER ' . $this->getArg('IRC_USER') . ' 0 * ' . $this->getArg('IRC_USER'));
         $this->sendCommand('NICK ' . $this->getArg('IRC_NICK'));
         while ($this->IRC_SOCKET) {
             $this->IRC_DATA = fgets($this->IRC_SOCKET, 1024);
             $this->IRC_DATA_ARGS = $this->parseMessage($this->IRC_DATA);
-            if ($this->LOGGING_ENABLED) {
-                ob_start();
-            }
             $this->handleCommand($this->IRC_DATA_ARGS['command']);
-            if ($this->LOGGING_ENABLED) {
-                $data = ob_get_clean();
-                $this->LOG .= $data;
-                echo $data;
-            }
             if (substr($this->IRC_DATA_ARGS['trail'], 0, 1) == '!') {
-                ob_start();
                 $this->CURRENT_COMMAND = preg_replace('/(\s*)([^\s]*)(.*)/', '$2', $this->IRC_DATA_ARGS['trail']);
                 $this->handleModule(substr($this->CURRENT_COMMAND, 1));
-                $data = ob_get_clean();
-                if ($this->LOGGING_ENABLED) {
-                    $this->LOG .= $data;
-                }
-                if (!empty($data) && $this->getArg('verbose')) {
-                    $data = explode("\n", $data);
-                    foreach ($data as $line) {
-                        if (strlen(trim($line)) == 0)
-                            continue;
-                        $line = str_replace("   ", '  ', $line);
-                        if ($this->IRC_DATA_ARGS['isPM'] == true) {
-                            $this->sendCommand('PRIVMSG ' . $this->IRC_DATA_ARGS['username'] . ' :' . $line);
-                        } else {
-                            $this->sendMessage($line);
-                        }
-                    }
-                }
-            }
-            if ($this->LOGGING_ENABLED && strlen($this->LOG) > 64) {
-                $this->pushLog();
             }
             usleep(10000);
         }
@@ -240,27 +232,29 @@ class IRCBot {
         if ($command == 'PING') {
             $this->sendCommand('PONG ' . substr($this->IRC_DATA, 5));
         }
-        if (!isset($this->EVENT_HANDLERS[$command]) || $command == 'PING') {
-            $ds = $this->getResultSet();
-            foreach ($ds as $s) {
-                if (empty($s)) {
-                    $empty = true;
-                } else {
-                    $empty = false;
-                }
+        $handled = false;
+        if(isset($this->EVENT_HANDLERS[$command])) {
+            foreach ($this->EVENT_HANDLERS[$command] as $func) {
+                $handled = true;
+                $func($this);
             }
-            if (isset($empty) && $empty === false) {
-                echo '[' . date('h:i') . '] <' . trim($ds['username']) . ':' . $ds['command'] . '> ' . trim($ds['trail']) . PHP_EOL;
-            }
-            return false;
-        }
-        foreach ($this->EVENT_HANDLERS[$command] as $func) {
-            $func($this);
         }
         foreach ($this->IRCBOT_MODULES as $mod) {
             if (method_exists($mod, 'EVENT_' . $command)) {
-                $command = 'EVENT_' . $command;
-                $mod->$command($this, $this->getResultSet());
+                $m = 'EVENT_' . $command;
+                $mod->$m($this->getResultSet());
+                $handled = true;
+            } else if(method_exists($mod, 'EVENT_UNHANDLED')) {
+                $mod->EVENT_UNHANDLED($this->getResultSet());
+            }
+        }
+        if(!$handled) {
+            $ds = $this->getResultSet();
+            if(!empty($ds['username']) || !empty($ds['command']) || !empty($ds['trail'])) {
+                if(strtolower($ds['command']) != "ping") {
+                    $e = (!empty($ds['args']) && strtolower($ds['args']) != $ds['args'] ? trim($ds['args']) : '');
+                    echo '[' . date('h:i') . ']: ' . trim($ds['trail']) . PHP_EOL;
+                }
             }
         }
         return true;
@@ -376,29 +370,6 @@ class IRCBot {
             return $this->IRC_ARGS[$arg];
         }
         return null;
-    }
-    
-    /**
-     * Toggle logging. I recommend leaving it off.
-     *
-     */
-    public function toggleLogging() {
-        $this->LOGGING_ENABLED = !$this->LOGGING_ENABLED;
-    }
-    
-    /**
-     * Push current log data to log.
-     * 
-     * @version 1.10
-     * 
-     */
-    public function pushLog() {
-        $current_log = 'logs/' . date('d-M-Y') . '--log.txt';
-        if (!is_file($current_log)) {
-            file_put_contents($current_log, '');
-        }
-        file_put_contents($current_log, $this->LOG, FILE_APPEND);
-        $this->LOG = '';
     }
     
     /**
