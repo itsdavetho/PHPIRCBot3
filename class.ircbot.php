@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHPSmallify -- Make your PHP code "small""
+ * PHPIRCBot -- Make your PHP code "small""
  *
  * PHP version 5
  *
@@ -130,9 +130,6 @@ class IRCBot {
         }
         fwrite($this->IRC_SOCKET, $cmd . "\r\n");
         fflush($this->IRC_SOCKET);
-        //if(!preg_match('/pong/i', $cmd)) {
-        //	echo trim($cmd) . PHP_EOL;
-        //}
         return true;
     }
     
