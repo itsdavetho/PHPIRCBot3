@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHPIRCBot -- Make your PHP code "small""
+ * PHPIRCBot
  *
  * PHP version 5
  *
@@ -29,7 +29,7 @@
  */
 
 /**
- * PHPSmallify -- Make your PHP code "small""
+ * PHPIRCBot3
  * 
  * @category  Utility
  * @package   IRCBot
